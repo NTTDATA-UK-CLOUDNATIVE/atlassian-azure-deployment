@@ -15,6 +15,7 @@ then
         yum check-update
         yum install jq -y
     else
+        export DEBIAN_FRONTEND=noninteractive
         apt-get update
         apt-get install -y jq
     fi
