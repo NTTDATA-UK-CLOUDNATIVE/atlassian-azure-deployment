@@ -5,21 +5,10 @@
 IS_REDHAT=$(cat /etc/os-release | egrep '^ID' | grep rhel)
 
 
-apt update > /dev/null 2>&1
-jq=`which jq`
-if [ "X$jq" == "X" ]
-then
-    if [[ -n ${IS_REDHAT} ]]
-    then
-        yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-        yum check-update
-        yum install jq -y
-    else
-        export DEBIAN_FRONTEND=noninteractive
-        apt-get update
-        apt-get install -y jq
-    fi
-fi
+
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get install -y jq
 
 BASE64_ENCODED=$1
 
