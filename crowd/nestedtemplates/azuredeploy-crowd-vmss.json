@@ -550,31 +550,10 @@
         },
 
         "isSslSpecified": "[not(empty(parameters('sslBase64EncodedPfxCertificate')))]",
-        "confProvisionCmd": "[concat('FILE_STORE_URL_DOMAIN=\"', parameters('storageFilesEndpoint'), '\" ', './provision_install.sh')]",
-        "crowdInstallCmd": "[concat('FILE_STORE_URL_DOMAIN=\"', parameters('storageFilesEndpoint'), '\" ', './prepare_install.sh ', base64(string(variables('env').settings)), ' 2>&1 > /var/log/crowd.install-$(uname -n).log')]"
+        "confProvisionCmd": "[concat('cat /etc/os-release')]",
+        "crowdInstallCmd": "[concat('cat /etc/os-release')]"
     },
     "resources": [
-        {
-            "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('jumpboxName'), '/provision-install-script')]",
-            "condition": "[not(parameters('isMarketplaceDeployment'))]",
-            "location": "[parameters('location')]",
-            "properties": {
-                "publisher": "Microsoft.Azure.Extensions",
-                "type": "CustomScript",
-                "typeHandlerVersion": "2.0",
-                "autoUpgradeMinorVersion": true,
-                "settings": {
-                    "fileUris": [
-                        "[uri(parameters('_artifactsLocation'), concat('scripts/provision_install.sh', parameters('_artifactsLocationSasToken')))]"
-                    ]
-                },
-                "protectedSettings": {
-                    "commandToExecute": "[variables('confProvisionCmd')]"
-                }
-            }
-        },
         {
             "type": "Microsoft.Compute/virtualMachineScaleSets",
             "name": "[variables('crowd').cluster.name]",
@@ -671,29 +650,8 @@
                             "enabled": true,
                             "storageUri": "[parameters('diagnosticsBlobStorageUri')]"
                         }
-                    },
-                    "extensionProfile": {
-                        "extensions": [
-                            {
-                                "name": "crowd-install-script",
-                                "properties": {
-                                    "publisher": "Microsoft.Azure.Extensions",
-                                    "type": "CustomScript",
-                                    "typeHandlerVersion": "2.0",
-                                    "autoUpgradeMinorVersion": true,
-                                    "settings": {
-                                        "fileUris": [
-                                            "[uri(parameters('_artifactsLocation'), concat('scripts/prepare_install.sh', parameters('_artifactsLocationSasToken')))]",
-                                            "[uri(parameters('_artifactsLocation'), concat('scripts/ansible.zip', parameters('_artifactsLocationSasToken')))]"
-                                        ]
-                                    },
-                                    "protectedSettings": {
-                                        "commandToExecute": "[variables('crowdInstallCmd')]"
-                                    }
-                                }
-                            }
-                        ]
                     }
+                    
                 }
             }
         }
